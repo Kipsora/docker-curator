@@ -1,0 +1,3 @@
+[submodule "pytools"]
+	path = pytools
+	url = git@github.com:kipsora/pytools.git
