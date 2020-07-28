@@ -1,0 +1,33 @@
+{
+  "dockers": {
+    "docker": {
+      "has_gpus_support": ["docker_version", ">=", "19.03"]
+    },
+    "nvidia-docker2": {
+      "has_gpus_support": true
+    },
+    "nvidia-docker": {
+      "has_gpus_support": true
+    }
+  },
+  "preset": {
+    "runtime": {
+      "mounts": {
+        "datasets": [[
+          {
+            "source": "$HOME/Documents/Datasets",
+            "target": "$HOME/Datasets",
+            "mode": "ro"
+          }
+        ]],
+        "projects": [[
+          {
+            "source": "$HOME/Projects",
+            "target": "$HOME/Projects",
+            "mode": "rw"
+          }
+        ]]
+      }
+    }
+  }
+}
