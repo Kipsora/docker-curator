@@ -5,6 +5,7 @@ import logging
 import os
 import re
 import shutil
+import socket
 import string
 import subprocess
 
@@ -28,10 +29,12 @@ DEFAULT_CONFIG = AttrListDictifier().dictify({
         "mounts": {},
         "devices": [],
         "networks": {},
+        "environment": {},
         "attributes": {
             "use_gpus": False,
             "use_privileged": False,
-            "use_user_permission": False
+            "use_user_permission": False,
+            "use_hostname": False
         },
         "extra_args": [],
         "attach_entrypoint": "/bin/bash"
@@ -101,7 +104,7 @@ class DockerCLI(object):
     def is_built(self, config):
         docker_images = self.execute("images", "--format", "{{ .Repository }}:{{ .Tag }}", use_stdout_pipe=True)
         docker_images = docker_images.stdout.split('\n')
-        return config.library.name in docker_images
+        return config.library.name in docker_images or f"{config.library.name}:latest" in docker_images
 
     def get_runtime_status(self, config):
         docker_containers = self.execute(
@@ -210,6 +213,14 @@ class DockerCLI(object):
                 self._logger.debug(f"Find device: {device}")
                 args.extend(["--device", device])
 
+        # Handling environment
+        if config.runtime.environment:
+            for key, value in config.runtime.environment.items():
+                if value is None:
+                    args.extend(["--env", str(key)])
+                else:
+                    args.append(["--env", f"{key}={value}"])
+
         # Handling other attributes
         if config.runtime.attributes.use_gpus:
             args.extend(["--gpus", "all"])
@@ -217,6 +228,8 @@ class DockerCLI(object):
             args.append("--privileged")
         if config.runtime.attributes.use_user_permission:
             args.extend(["-u", f"{os.geteuid()}:{os.getegid()}"])
+        if config.runtime.attributes.use_hostname:
+            args.extend(["--hostname", socket.gethostname()])
 
         args.extend(config.runtime.extra_args)
 
