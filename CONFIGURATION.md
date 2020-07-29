@@ -90,7 +90,7 @@ The runtime options contain the information to start a runtime docker container:
       "use_gpus": "<true | false>",
       "use_privileged": "<true | false>",
       "use_user_permission": "<true | false>",
-      "use_hostnames": "<true | false>"
+      "use_hostname": "<true | false>"
     },
     "extra_args": [],
     "attach_entrypoint": "<command to be executed when you attach to the container>"
