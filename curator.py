@@ -239,14 +239,14 @@ class DockerCLI(object):
         )
 
     def clean(self, config):
-        if getattr(config, "with_images", False) and self.is_built(config):
-            self.execute("rmi", config.library.name, use_dry_run=config.dry_run)
-
         runtime_status = self.get_runtime_status(config)
         if runtime_status is not None:
             if runtime_status.startswith("Up"):
                 self.execute("stop", config.runtime.name, use_dry_run=config.dry_run)
             self.execute("rm", config.runtime.name, use_dry_run=config.dry_run)
+
+        if getattr(config, "with_images", False) and self.is_built(config):
+            self.execute("rmi", config.library.name, use_dry_run=config.dry_run)
 
     def attach(self, config):
         if not self.is_built(config):
