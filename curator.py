@@ -166,7 +166,11 @@ class DockerCLI(object):
             runtime_variables = self.get_library_variables(config)
             for name, trials in config.runtime.mounts.items():
                 if trials is None:
-                    trials = config.preset.runtime.mounts[name]
+                    if name in config.preset.runtime.mounts:
+                        trials = config.preset.runtime.mounts[name]
+                    else:
+                        self._logger.warning(f"Skipping mount \"{name}\", which is not a preset value")
+                        continue
 
                 is_any_trial_successful = False
                 for trial in trials:
